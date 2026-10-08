@@ -22,7 +22,7 @@ jobs:
           node <<'NODE'
           const fs=require('fs'),m=JSON.parse(fs.readFileSync('metadata.json','utf8'));
           const u=new URL(m.sourceUrl);
-          if(m.version!=='1.1.1'||u.protocol!=='https:'||!/^[a-z0-9-]+\.trycloudflare\.com$/.test(u.hostname)||u.pathname!=='/'||u.search||u.hash||u.username||u.password)throw Error('Invalid release metadata');
+          if(m.version!=='1.1.2'||u.protocol!=='https:'||!/^[a-z0-9-]+\.trycloudflare\.com$/.test(u.hostname)||u.pathname!=='/'||u.search||u.hash||u.username||u.password)throw Error('Invalid release metadata');
           for(const hash of [m.installerSha256,m.portableSha256])if(!/^[a-f0-9]{64}$/.test(hash))throw Error('Invalid checksum');
           fs.appendFileSync(process.env.GITHUB_ENV,'SOURCE_URL='+u.origin+'\nVERSION='+m.version+'\n');
           fs.writeFileSync('SHA256SUMS.txt',m.installerSha256+'  CodexBuddy-Setup.exe\n'+m.portableSha256+'  CodexBuddy.exe\n');
