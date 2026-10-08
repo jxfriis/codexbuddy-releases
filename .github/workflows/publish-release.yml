@@ -1,0 +1,38 @@
+name: Publish verified CodexBuddy Windows release
+on:
+  push:
+    branches: [main]
+    paths: [release-transfer.json]
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: codexbuddy-release-publish
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Read and validate release metadata
+        run: |
+          gh api "repos/$GITHUB_REPOSITORY/contents/release-transfer.json?ref=$GITHUB_SHA" --jq .content | base64 --decode > metadata.json
+          node <<'NODE'
+          const fs=require('fs'),m=JSON.parse(fs.readFileSync('metadata.json','utf8'));
+          const u=new URL(m.sourceUrl);
+          if(m.version!=='1.1.0'||u.protocol!=='https:'||!/^[a-z0-9-]+\.trycloudflare\.com$/.test(u.hostname)||u.pathname!=='/'||u.search||u.hash||u.username||u.password)throw Error('Invalid release metadata');
+          for(const hash of [m.installerSha256,m.portableSha256])if(!/^[a-f0-9]{64}$/.test(hash))throw Error('Invalid checksum');
+          fs.appendFileSync(process.env.GITHUB_ENV,'SOURCE_URL='+u.origin+'\nVERSION='+m.version+'\n');
+          fs.writeFileSync('SHA256SUMS.txt',m.installerSha256+'  CodexBuddy-Setup.exe\n'+m.portableSha256+'  CodexBuddy.exe\n');
+          fs.writeFileSync('notes.md',m.notes);
+          NODE
+      - name: Download and verify installers
+        run: |
+          curl --fail --location --retry 3 "$SOURCE_URL/CodexBuddy-Setup.exe" --output CodexBuddy-Setup.exe
+          curl --fail --location --retry 3 "$SOURCE_URL/CodexBuddy.exe" --output CodexBuddy.exe
+          sha256sum --check SHA256SUMS.txt
+      - name: Publish the Windows download
+        run: |
+          gh release create "v$VERSION" CodexBuddy-Setup.exe CodexBuddy.exe SHA256SUMS.txt --repo "$GITHUB_REPOSITORY" --title "CodexBuddy $VERSION — Windows" --notes-file notes.md --latest
