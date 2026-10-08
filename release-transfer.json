@@ -1,0 +1,7 @@
+{
+  "version": "1.1.0",
+  "sourceUrl": "https://half-manufactured-practical-mats.trycloudflare.com/",
+  "installerSha256": "8fe3b51c956768779e29b87381a3ba1c9060ccdacd3fb7dbbf7f9ca6e68d71ea",
+  "portableSha256": "a91a041b68929e1f33921f8df6742e5cd2711331235f510ca450625afc4fe0d2",
+  "notes": "A free desktop companion for your own Codex usage on Windows 10 and 11 (x64).\n\nDownload **CodexBuddy-Setup.exe** to install, or **CodexBuddy.exe** for the portable version. Follow the first-run guide and connect your own ChatGPT account with Codex access.\n\nIncludes five-hour and weekly allowance, reset countdowns, a tray icon, Ctrl+Alt+C show/hide, corner snapping, optional always-on-top, position lock, and optional usage colors.\n\nThis release is unsigned, so Windows may show a publisher warning. SHA-256 checksums are provided in SHA256SUMS.txt.\n\nIndependent companion, not affiliated with OpenAI."
+}
